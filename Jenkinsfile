@@ -13,7 +13,7 @@ pipeline {
         stage('Checkout GIT (Backend)') {
             steps {
                 echo "Getting Project from Git (Backend)"
-                 checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/nourhenechalghoumi/DevOps_Project_Back.git']]])
+                checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/nourhenechalghoumi/DevOps_Project_Back.git']]])
             }
         }
 
@@ -36,23 +36,6 @@ pipeline {
             }
         }
 
-    //    stage('Checkout GIT (Frontend)') {
-      //      steps {
-        //        checkout([$class: 'GitSCM', branches: [[name: '*/main']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/nourhenechalghoumi/DevOps_Project_Front.git']]])
-//            }
-  //      }
-
-      //  stage('Build Frontend') {
-        //    steps {
-          //      script {
-            //        echo "Getting Project from Git (Frontend)"
-              //      sh 'npm install'
-                //    sh 'ng build'
-               // }
-           // }
-       // }
-     
-
         stage('SonarQube analysis') {
             steps {
                 script {
@@ -74,33 +57,13 @@ pipeline {
                 script {
                     def imageName = "nourhenechalghoumi/devops_project"
                     sh "docker build -t $imageName ."
-                    sh "docker login -u $DOCKERHUB_CREDENTIALS_USR -p \$DOCKERHUB_CREDENTIALS_PSW"
+                    sh "docker login -u $DOCKERHUB_CREDENTIALS_USR -p $DOCKERHUB_CREDENTIALS_PSW"
                     sh "docker push $imageName"
                 }
             }
         }
-        
 
-        //stage('Build Docker Image (Frontend)') {
-          //  steps {
-            //    script {
-              //      def imageName = "nourhenechalghoumi/devops_project_frontend"
-                //    sh "docker build -t $imageName ."
-                  //  sh "docker push $imageName"
-               // }
-           // }
-       // }
-       // stage('Debug') {
-    	 //   steps {
-        //	script {
-          //  	    echo "Current PATH: ${env.PATH}"
-            //        sh "npm list -g --depth=0"
-        //	}
-    	  //  }
-//	}
-
-
-        stage('Deploy Front/Back/DB') {
+        stage('Deploy Back/DB') {
             steps {
                 script {
                     sh 'docker-compose -f docker-compose.yml up -d'
@@ -108,34 +71,39 @@ pipeline {
             }
         }
     }
+    
+    stage('Deploy Prometheus and Grafana') {
+            steps {
+                script {
+                        sh 'docker-compose -f docker-compose-perm-grafa.yml up -d'
+                    }
+                }
+            }
 
     post {
         success {
             script {
-                def subject = "Notification success"
-                def body = "BUILD DONE "
-                def to = 'test.devops697@gmail.com'
+                def subject = "Jenkins Build Notification - Success"
+                def body = "The Jenkins build for your project has completed successfully.\n\nBuild History:\n${BUILD_LOG}"
 
-                mail(
+                emailext (
+                    to: 'test.devops697@gmail.com',
                     subject: subject,
                     body: body,
-                    to: to,
                 )
             }
         }
         failure {
             script {
-                def subject = "Build Failure - ${currentBuild.fullDisplayName}"
-                def body = "The build has failed in the Jenkins pipeline. Please investigate and take appropriate action."
-                def to = 'test.devops697@gmail.com'
+                def subject = "Jenkins Build Notification - Failure"
+                def body = "The Jenkins build for your project has failed. Please investigate and take appropriate action.\n\nBuild History:\n${BUILD_LOG}"
 
-                mail(
+                emailext (
+                    to: 'test.devops697@gmail.com',
                     subject: subject,
                     body: body,
-                    to: to,
                 )
             }
         }
+     }
     }
-}
-
