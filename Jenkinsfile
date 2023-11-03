@@ -70,21 +70,21 @@ pipeline {
                 }
             }
         }
-    }
-    
-    stage('Deploy Prometheus and Grafana') {
+        
+        stage('Deploy Prometheus and Grafana') {
             steps {
                 script {
-                        sh 'docker-compose -f docker-compose-perm-grafa.yml up -d'
-                    }
+                    sh 'docker-compose -f docker-compose-perm-grafa.yml up -d'
                 }
             }
-
+        }
+    }
+    
     post {
         success {
             script {
                 def subject = "Jenkins Build Notification - Success"
-                def body = "The Jenkins build for your project has completed successfully.\n\nBuild History:\n${BUILD_LOG}"
+                def body = "The Jenkins build for your project has completed successfully."
 
                 emailext (
                     to: 'test.devops697@gmail.com',
@@ -96,7 +96,7 @@ pipeline {
         failure {
             script {
                 def subject = "Jenkins Build Notification - Failure"
-                def body = "The Jenkins build for your project has failed. Please investigate and take appropriate action.\n\nBuild History:\n${BUILD_LOG}"
+                def body = "The Jenkins build for your project has failed. Please investigate and take appropriate action."
 
                 emailext (
                     to: 'test.devops697@gmail.com',
@@ -105,5 +105,6 @@ pipeline {
                 )
             }
         }
-     }
     }
+}
+
