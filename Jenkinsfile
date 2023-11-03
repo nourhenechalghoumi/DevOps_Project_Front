@@ -79,6 +79,7 @@ pipeline {
                 }
             }
         }
+        
 
         stage('Build Docker Image (Frontend)') {
             steps {
@@ -89,6 +90,15 @@ pipeline {
                 }
             }
         }
+        stage('Debug') {
+    	    steps {
+        	script {
+            	    echo "Current PATH: ${env.PATH}"
+                    sh "npm list -g --depth=0"
+        	}
+    	    }
+	}
+
 
         stage('Deploy Front/Back/DB') {
             steps {
