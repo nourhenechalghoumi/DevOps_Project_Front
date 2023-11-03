@@ -38,7 +38,7 @@ pipeline {
 
         stage('Checkout GIT (Frontend)') {
             steps {
-                checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/nourhenechalghoumi/DevOps_Project_Front.git']]])
+                checkout([$class: 'GitSCM', branches: [[name: '*/main']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/nourhenechalghoumi/DevOps_Project_Front.git']]])
             }
         }
 
@@ -46,13 +46,12 @@ pipeline {
             steps {
                 script {
                     echo "Getting Project from Git (Frontend)"
-                     dir('/home/devops/.git/DevOps_Project_Front') {
                     sh 'npm install'
                     sh 'ng build'
                 }
             }
         }
-     }
+     
 
         stage('SonarQube analysis') {
             steps {
