@@ -10,14 +10,14 @@ pipeline {
     }
 
     stages {
-        stage('Checkout GIT (Backend)') {
+        stage('Checkout Backend') {
             steps {
-                echo "Getting Project from Git (Backend)"
+                echo "Checking out Backend from Git"
                 checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/nourhenechalghoumi/DevOps_Project_Back.git']]])
             }
         }
 
-        stage('Run Unit Tests JUNIT') {
+        stage('Run Unit Tests') {
             steps {
                 sh 'mvn clean test'
             }
@@ -63,41 +63,40 @@ pipeline {
             }
         }
 
-        stage('Deploy Back/DB') {
+        stage('Deploy Backend/DB') {
             steps {
                 script {
                     sh 'docker-compose -f docker-compose.yml up -d'
                 }
             }
         }
-         //stage('Checkout GIT (Frontend)') {
-           // steps {
-             //   echo "Getting Project from Git (Frontend)"
-               // checkout([$class: 'GitSCM', branches: [[name: '*/main']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/nourhenechalghoumi/DevOps_Project_Front.git']]])
 
-                // This is where you build the frontend, run tests, and perform other frontend-specific tasks
-                // dir('DevOps_Project_Front') {
-                   // script {
-                     //   sh 'npm install'
-                        
+       // stage('Checkout Frontend') {
+         //   steps {
+           //     echo "Checking out Frontend from Git"
+             //   checkout([$class: 'GitSCM', branches: [[name: '*/main']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/nourhenechalghoumi/DevOps_Project_Front.git']])
+
+               // dir('DevOps_Project_Front') {
+                 //   script {
+                   //     sh 'npm install'
+                        // Other frontend-specific tasks
                    // }
                // }
            // }
        // }
-          
 
-         stage('Deploy to Nexus') {
-           steps {
-                     script {
-                        sh 'mvn deploy'
-                     }
-               }
-         }
-         
+        stage('Deploy to Nexus') {
+            steps {
+                script {
+                    sh 'mvn deploy'
+                }
+            }
+        }
+
         stage('Deploy Prometheus and Grafana') {
             steps {
                 script {
-                     sh 'docker-compose -f docker-compose-prometheus.yml -f docker-compose-grafana.yml up -d'
+                    sh 'docker-compose -f docker-compose-prometheus.yml -f docker-compose-grafana.yml up -d'
                 }
             }
         }
