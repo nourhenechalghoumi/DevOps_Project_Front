@@ -70,30 +70,28 @@ pipeline {
                 }
             }
         }
-         stage('Checkout GIT (Frontend)') {
-            steps {
-                echo "Getting Project from Git (Frontend)"
-                checkout([$class: 'GitSCM', branches: [[name: '*/main']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/nourhenechalghoumi/DevOps_Project_Front.git']]])
+         //stage('Checkout GIT (Frontend)') {
+           // steps {
+             //   echo "Getting Project from Git (Frontend)"
+               // checkout([$class: 'GitSCM', branches: [[name: '*/main']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/nourhenechalghoumi/DevOps_Project_Front.git']]])
 
                 // This is where you build the frontend, run tests, and perform other frontend-specific tasks
-                dir('DevOps_Project_Front') {
-                    script {
-                        sh 'npm install'
-                        sh 'ng build '
-                    }
-                }
-            }
-        }
+                // dir('DevOps_Project_Front') {
+                   // script {
+                     //   sh 'npm install'
+                        
+                   // }
+               // }
+           // }
+       // }
           
 
          stage('Deploy to Nexus') {
            steps {
-                 dir('DevOps_Project') {
                      script {
                         sh 'mvn deploy'
                      }
-                 }
-             }
+               }
          }
          
         stage('Deploy Prometheus and Grafana') {
